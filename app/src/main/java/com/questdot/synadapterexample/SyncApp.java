@@ -37,7 +37,12 @@ public class SyncApp extends Application {
             ContentResolver.addPeriodicSync(
                     account, SyncProvider.AUTHORITY, new Bundle(), SYNC_FREQUENCY);
 
+            ContentResolver.requestSync(account,
+                    SyncProvider.AUTHORITY, new Bundle());
+
         }
+
+
 
      /*   String acctType = getString(R.string.account_type);
         if (checkSelfPermission(Manifest.permission.GET_ACCOUNTS) != PackageManager.PERMISSION_GRANTED) {
@@ -53,7 +58,16 @@ public class SyncApp extends Application {
             return;
         }*/
     }
-
+    public static void TriggerRefresh() {
+        Bundle b = new Bundle();
+        // Disable sync backoff and ignore sync preferences. In other words...perform sync NOW!
+        b.putBoolean(ContentResolver.SYNC_EXTRAS_MANUAL, true);
+        b.putBoolean(ContentResolver.SYNC_EXTRAS_EXPEDITED, true);
+        ContentResolver.requestSync(
+                GenericAccountService.GetAccount(),      // Sync account
+                SyncProvider.AUTHORITY, // Content authority
+                b);                                      // Extras
+    }
    /* private void addAccount(String name, String acctType) {
         Account account = new Account(name, acctType);
         AccountManager.get(this).addAccountExplicitly(account, null, null);

@@ -29,5 +29,6 @@ class SyncAdapter extends AbstractThreadedSyncAdapter {
         SyncResult syncResult)
     {
         Log.d(TAG, "sync: " + account);
+        getContext().getContentResolver().notifyChange(SyncProvider.URI, null, false);
     }
 }

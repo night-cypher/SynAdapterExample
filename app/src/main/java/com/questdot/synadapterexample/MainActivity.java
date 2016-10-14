@@ -1,5 +1,8 @@
 package com.questdot.synadapterexample;
 
+import android.database.ContentObserver;
+import android.os.Handler;
+import android.os.Looper;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -9,7 +12,7 @@ import android.widget.Button;
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 
     Button btnSyn;
-
+    private ContentObserver mObserver;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -18,6 +21,17 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         btnSyn= (Button)findViewById(R.id.btnSyn);
 
         btnSyn.setOnClickListener(this);
+        mObserver = new ContentObserver(new Handler(Looper.getMainLooper())) {
+            public void onChange(boolean selfChange) {
+                // Do something.
+            }
+        };
+        getContentResolver().registerContentObserver(SyncProvider.URI, true,mObserver);
+    }
+
+    @Override
+    public void onDestroy() {
+        getContentResolver().unregisterContentObserver(mObserver);
     }
 
     @Override
@@ -25,8 +39,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         switch(v.getId()){
             case R.id.btnSyn:
                 Log.d("ACT", "sync called");
-                getContentResolver().notifyChange(SyncProvider.URI, null, true);
 
+
+                SyncApp.TriggerRefresh();
                 break;
         }
     }
